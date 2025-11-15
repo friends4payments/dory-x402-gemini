@@ -1,0 +1,71 @@
+# Node modules - will be installed during build
+node_modules
+**/node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Build outputs
+**/dist
+**/.mastra
+**/.turbo
+
+# Environment files - secrets should be injected at runtime
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test files
+**/__tests__
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test
+**/tests
+coverage
+
+# Documentation
+README.md
+*.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Cloudflare Worker (paywall) - not needed in container
+paywall
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Cloud Run deployment files
+*.yaml
+deploy.sh

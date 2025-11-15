@@ -1,0 +1,107 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: dory-x402-agent
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    metadata:
+      annotations:
+        # Scale to zero after 15 minutes of no traffic
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "10"
+        # Keep CPU allocated even when no requests (needed for long-running browser tasks)
+        run.googleapis.com/cpu-throttling: "false"
+        # Set max timeout to 1 hour for long browser automation tasks
+        run.googleapis.com/timeout-seconds: "3600"
+    spec:
+      # Set to 2nd generation execution environment
+      containerConcurrency: 80
+      timeoutSeconds: 3600
+      serviceAccountName: dory-x402-agent-sa
+      containers:
+        - name: dory-agent
+          image: REGION-docker.pkg.dev/PROJECT_ID/dory-x402/agent:latest
+          ports:
+            - name: http1
+              containerPort: 4111
+          env:
+            # OpenAI API Key from Secret Manager
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-key
+                  key: latest
+
+            - name: GOOGLE_GENERATIVE_AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: google-generative-ai-api-key
+                  key: latest
+
+            # Solana wallet private key from Secret Manager
+            - name: AGENT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: agent-private-key
+                  key: latest
+
+            # Browser-Use API key from Secret Manager
+            - name: BROWSER_USE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: browser-use-api-key
+                  key: latest
+
+            # Paywall URL (Cloudflare Worker)
+            - name: PAYWALL_URL
+              value: "https://your-paywall.workers.dev"
+
+            # Solana RPC URL
+            - name: SOLANA_RPC_URL
+              value: "https://api.devnet.solana.com"
+
+            - name: GAME_MCP_SERVER_PATH
+              value: "/app/mcp/server.js"
+
+            - name: UBER_EATS_MCP_SERVER_PATH
+              value: "/app/mcp-uber-eats/server.js"
+
+            # Node environment
+            - name: NODE_ENV
+              value: "production"
+
+            # Port configuration
+            - name: PORT
+              value: "4111"
+
+          resources:
+            limits:
+              # Allocate 2 vCPU and 4GB RAM for browser automation
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 2Gi
+
+          # Liveness probe
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4111
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+
+          # Startup probe for slow container starts
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 4111
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 12
