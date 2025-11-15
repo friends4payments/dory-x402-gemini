@@ -16,7 +16,7 @@ STEP-BY-STEP INSTRUCTIONS:
 2. VERIFY/SELECT DELIVERY ADDRESS:
    - Check if delivery address is already set to: 291 Campus Drive, Stanford, CA 94305, US
    - If the address is already selected, proceed to next step
-   - If prompted to select or confirm address, choose the saved address: 291 Campus Drive, Stanford, CA 94305, US
+   - If prompted to select or confirm address, choose the saved address: 291 Campus Drive, Stanford, CA 94305, US. Saved as "Stanford"
    - Ensure DELIVERY mode is selected (not Pickup)
 
 3. FIND AND SELECT PEPPERONI CLASSIC PIZZA:
