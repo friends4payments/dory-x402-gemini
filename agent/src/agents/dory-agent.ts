@@ -5,13 +5,13 @@ import {
   paymentTool,
   checkWalletBalanceTool,
   getRecentTransactionsTool,
+  uberEatsCreateOrder,
+  uberEatsPaymentTool,
 } from "../tools/payment-tool";
 import { getGameMcpTools } from "../tools/game-mcp-tools";
-import { getUberEatsMcpTools } from "../tools/mcp-uber-eats-tools";
 
 export async function createDoryAgent() {
   const gameTools = await getGameMcpTools();
-  const uberEatsTools = await getUberEatsMcpTools();
   return new Agent({
     name: "Dory Agent",
     instructions: `
@@ -24,7 +24,7 @@ export async function createDoryAgent() {
     3. **Check tool responses for required outputs before proceeding.**
     4. **Trust MCP guidance over general gaming assumptions.**
 
-    ## PURCHASE ORDER WORKFLOW (CRITICAL)
+    ## PURCHASE GAME ITEMS ORDER WORKFLOW (CRITICAL)
 
     When a tool (like 'rtk-buy-item') requires a \`paymentId\`, STRICTLY follow these steps, without guessing, skipping, or attempting out-of-order execution. Any deviation will cause request failure and a poor user experience:
 
@@ -36,14 +36,24 @@ export async function createDoryAgent() {
     6. **If any tool call fails**, STOP and show the error to the user. Do NOT retry blind or guess—ensure all parameters/IDs come directly from previous outputs.
 
     If you follow this workflow, purchases will succeed and the user will receive their item. Misordering, missing parameters, or guessing will lead to failures.
+
+    ## PURCHASE A PIZZA ##
+
+    1. First step for buy a pizza is call the tool called \`uber_eats_create_order \`.
+    2. Wait until the tools responds with the order.
+    3. **Ask the user to confirm** the order, clearly communicate the item, total price, the asset, and amount before taking payment.
+    4. **When user confirms, call \`uber_eats_pay_order\`** with the order object from step 1 (do NOT change/rebuild it).
+    5. **If any tool call fails**, STOP and show the error to the user. Do NOT retry blind or guess—ensure all parameters/IDs come directly from previous outputs.
+    
   `,
     model: "google/gemini-2.5-flash",
     tools: {
       paymentTool,
+      uberEatsCreateOrder,
+      uberEatsPaymentTool,
       checkWalletBalanceTool,
       getRecentTransactionsTool,
       ...gameTools,
-      ...uberEatsTools,
     },
     memory: new Memory({
       storage: new LibSQLStore({

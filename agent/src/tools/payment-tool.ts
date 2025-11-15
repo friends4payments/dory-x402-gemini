@@ -1,7 +1,7 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import bs58 from 'bs58';
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import bs58 from "bs58";
 
 import {
   decodeXPaymentResponse,
@@ -9,18 +9,20 @@ import {
   createSigner,
   type Hex,
 } from "x402-fetch";
+import { BrowserUseClient } from "browser-use-sdk";
+import { uberEatsPizza } from "./uber-eats-prompt";
 
 type Order = {
   price: number;
   asset: string;
   payload: Record<string, any>;
-}
+};
 
 const TOKEN_NAMES = {
-  '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU': 'USDC',
+  "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU": "USDC",
   // 'HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr': 'EURC',
   // 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr': 'CASH', // USDC-dev token used as there is no $CASH for devnet
-} 
+};
 /**
  * Native Mastra tool for processing payments to access premium features.
  * Uses x402-fetch to handle micropayments via Solana devnet.
@@ -55,6 +57,92 @@ export const paymentTool = createTool({
       return {
         paymentId,
       };
+    } catch (error) {
+      throw new Error(
+        `Payment error: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  },
+});
+
+export const uberEatsCreateOrder = createTool({
+  id: "uber_eats_create_order",
+  description:
+    "Creates an order to be used for BUYING in Uber eats. This creates a JSON format order",
+  outputSchema: z.object({
+    order: z
+      .any()
+      .describe(
+        "The order for Uber eats to process payment for using uber_eats_pay_order."
+      ),
+  }),
+  execute: async ({ context }) => {
+    console.log("uber_eats_create_order tool executing with context", context);
+
+    const roundedPrice = process.env.UBER_EATS_PRICE
+      ? Number(process.env.UBER_EATS_PRICE)
+      : 61.23;
+
+    const order = {
+      price: roundedPrice,
+      asset: "USDC",
+      payload: {
+        itemType: "Pizza pepperoni",
+        amount: 1,
+      },
+    };
+
+    return { order };
+  },
+});
+
+export const uberEatsPaymentTool = createTool({
+  id: "uber_eats_pay_order",
+  description: "Use this tool to create an Uber eats order.",
+  inputSchema: z.object({
+    order: z
+      .any()
+      .describe(
+        "The order to process payment for. This must be only created after executing the uber_eats_create_order tool."
+      ),
+  }),
+  outputSchema: z.object({
+    message: z.string().describe("result of the purchase"),
+  }),
+  execute: async ({ context }) => {
+    console.log("uber_eats_pay_order tool executing with context", context);
+    const { order } = context;
+    // round the price to 2 decimal places
+    const roundedPrice = Math.round(order.price * 100) / 100;
+    order.price = roundedPrice;
+    order.asset = "USDC";
+
+    try {
+      const paymentId = await x402Payment(order);
+
+      const browserUseClient = new BrowserUseClient({
+        apiKey: process.env.BROWSER_USE_API_KEY || "",
+      });
+
+      const session = await browserUseClient.sessions.createSession({
+        profileId: process.env.BROWSER_USE_PROFILE_ID || "",
+      });
+
+      const task = await browserUseClient.tasks.createTask({
+        sessionId: session.id,
+        task: uberEatsPizza,
+        llm: "gemini-2.5-flash",
+        startUrl: "https://www.ubereats.com",
+        allowedDomains: ["ubereats.com"],
+      });
+
+      if (task.id) {
+        return { message: "The pizza have been ordered successfully." };
+      }
+
+      return { message: "Problems ordering the pizza." };
     } catch (error) {
       throw new Error(
         `Payment error: ${
@@ -114,7 +202,7 @@ async function x402Payment(order: Order): Promise<string> {
 function getWalletPublicKey(): PublicKey {
   const privateKey = process.env.AGENT_PRIVATE_KEY;
   if (!privateKey) {
-    throw new Error('AGENT_PRIVATE_KEY is not set');
+    throw new Error("AGENT_PRIVATE_KEY is not set");
   }
 
   // Decode the base58 private key and create a keypair
@@ -127,24 +215,29 @@ function getWalletPublicKey(): PublicKey {
  * Helper function to create a Solana RPC connection
  */
 function getSolanaConnection(): Connection {
-  const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-  return new Connection(rpcUrl, 'confirmed');
+  const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
+  return new Connection(rpcUrl, "confirmed");
 }
 
 /**
  * Tool for checking the wallet balance.
  */
 export const checkWalletBalanceTool = createTool({
-  id: 'check_wallet_balance',
-  description: 'Check the SOL balance of the agent wallet (AGENT_PRIVATE_KEY). Returns balance in both SOL and lamports.',
+  id: "check_wallet_balance",
+  description:
+    "Check the SOL balance of the agent wallet (AGENT_PRIVATE_KEY). Returns balance in both SOL and lamports.",
   inputSchema: z.object({}),
   outputSchema: z.object({
-    publicKey: z.string().describe('The public key of the wallet'),
-    balanceSOL: z.number().describe('The balance in SOL'),
-    tokenBalance: z.array(z.object({
-      name: z.string().describe('The name of the token'),
-      amount: z.number().describe('The balance of the token'),
-    })).describe('The balance of the tokens'),
+    publicKey: z.string().describe("The public key of the wallet"),
+    balanceSOL: z.number().describe("The balance in SOL"),
+    tokenBalance: z
+      .array(
+        z.object({
+          name: z.string().describe("The name of the token"),
+          amount: z.number().describe("The balance of the token"),
+        })
+      )
+      .describe("The balance of the tokens"),
   }),
   execute: async () => {
     try {
@@ -153,31 +246,42 @@ export const checkWalletBalanceTool = createTool({
 
       const balanceLamports = await connection.getBalance(publicKey);
       const balanceSOL = balanceLamports / 1_000_000_000; // Convert lamports to SOL
-      const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
-        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
-      })
+      const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+        publicKey,
+        {
+          programId: new PublicKey(
+            "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          ),
+        }
+      );
       const tokens = tokenAccounts.value
-        .filter((account) => account.account.data.parsed.info.tokenAmount.uiAmount > 0)
+        .filter(
+          (account) => account.account.data.parsed.info.tokenAmount.uiAmount > 0
+        )
         .map((account) => ({
           mint: account.account.data.parsed.info.mint,
           balance: account.account.data.parsed.info.tokenAmount.uiAmount,
-          decimals: account.account.data.parsed.info.tokenAmount.decimals
-        }))
+          decimals: account.account.data.parsed.info.tokenAmount.decimals,
+        }));
 
-        const tokenBalance =
+      const tokenBalance =
         tokens?.map((token) => {
           return {
             name: TOKEN_NAMES[token.mint as keyof typeof TOKEN_NAMES],
-            amount: token.balance
-          }
-        }) ?? []
+            amount: token.balance,
+          };
+        }) ?? [];
       return {
         publicKey: publicKey.toBase58(),
         balanceSOL,
         tokenBalance,
       };
     } catch (error) {
-      throw new Error(`Failed to check wallet balance: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Failed to check wallet balance: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     }
   },
 });
@@ -186,14 +290,25 @@ export const checkWalletBalanceTool = createTool({
  * Tool for retrieving recent transactions for the agent wallet.
  */
 export const getRecentTransactionsTool = createTool({
-  id: 'get_recent_transactions',
-  description: 'Retrieve the most recent transactions for the agent wallet (AGENT_PRIVATE_KEY). Returns transaction urlsto view it on solscan.io.',
+  id: "get_recent_transactions",
+  description:
+    "Retrieve the most recent transactions for the agent wallet (AGENT_PRIVATE_KEY). Returns transaction urlsto view it on solscan.io.",
   inputSchema: z.object({
-    limit: z.number().min(1).max(10).default(5).optional().describe('Number of transactions to retrieve (1-10, default: 5)'),
+    limit: z
+      .number()
+      .min(1)
+      .max(10)
+      .default(5)
+      .optional()
+      .describe("Number of transactions to retrieve (1-10, default: 5)"),
   }),
   outputSchema: z.object({
-    publicKey: z.string().describe('The public key of the wallet'),
-    transactions: z.array(z.string().describe('Transaction URL, always display it as clickable link')),
+    publicKey: z.string().describe("The public key of the wallet"),
+    transactions: z.array(
+      z
+        .string()
+        .describe("Transaction URL, always display it as clickable link")
+    ),
   }),
   execute: async ({ context }) => {
     try {
@@ -201,16 +316,24 @@ export const getRecentTransactionsTool = createTool({
       const publicKey = getWalletPublicKey();
       const connection = getSolanaConnection();
 
-      const signatures = await connection.getSignaturesForAddress(publicKey, { limit });
+      const signatures = await connection.getSignaturesForAddress(publicKey, {
+        limit,
+      });
 
-      const transactions = signatures.map(sig => `https://solscan.io/tx/${sig.signature}/?cluster=devnet`);
+      const transactions = signatures.map(
+        (sig) => `https://solscan.io/tx/${sig.signature}/?cluster=devnet`
+      );
 
       return {
         publicKey: publicKey.toBase58(),
         transactions,
       };
     } catch (error) {
-      throw new Error(`Failed to retrieve transactions: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Failed to retrieve transactions: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     }
   },
 });
