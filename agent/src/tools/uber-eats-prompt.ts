@@ -77,6 +77,7 @@ IMPORTANT NOTES:
 - Order exactly 1 Margherita pizza(s) with no customizations
 - Always wait for page elements to load before interacting
 - Take screenshots at each major step for verification
+- Do not add any extras to the order, just Skip or Close the extras modals
 - If not logged in or profile issue, note this in error
 - If address not found in saved locations, note this in error
 - If insufficient Uber Eats credits, note the amount needed
