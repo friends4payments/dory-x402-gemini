@@ -14,9 +14,9 @@ STEP-BY-STEP INSTRUCTIONS:
    - Verify you are on Tony's Napolitana Pizza store page
 
 2. VERIFY/SELECT DELIVERY ADDRESS:
-   - Check if delivery address is already set to: 560 20th St, San Francisco, CA 94107-4344, US
+   - Check if delivery address is already set to: 291 Campus Drive, Stanford, CA 94305, US
    - If the address is already selected, proceed to next step
-   - If prompted to select or confirm address, choose the saved address: 560 20th St, San Francisco, CA 94107-4344, US
+   - If prompted to select or confirm address, choose the saved address: 291 Campus Drive, Stanford, CA 94305, US
    - Ensure DELIVERY mode is selected (not Pickup)
 
 3. FIND AND SELECT PEPPERONI CLASSIC PIZZA:
@@ -24,13 +24,13 @@ STEP-BY-STEP INSTRUCTIONS:
    - This may be under sections like "Pizzas", "Classic Pizzas", or similar
    - Click on "Pepperoni Classic" to view the item details
    - Do NOT make any customizations - keep all default options
-   - Set quantity to \${quantity} pizzas
+   - Set quantity to 1 pizzas
    - Click "Add to Cart" or "Add to Order" button
    - Wait for confirmation that item was added to cart
 
 4. VIEW CART AND PROCEED TO CHECKOUT:
    - Click on cart icon or "View Cart" button
-   - Verify the cart shows: \${quantity}x Pepperoni Classic pizza
+   - Verify the cart shows: 1 Pepperoni Classic pizza
    - Click "Checkout" or "Go to Checkout" button
 
 5. SELECT PRIORITY DELIVERY:
@@ -53,8 +53,8 @@ STEP-BY-STEP INSTRUCTIONS:
      {
        "order_number": "order confirmation number",
        "total_amount": "total charged amount",
-       "delivery_address": "560 20th St, San Francisco, CA 94107-4344, US",
-       "items": "\${quantity}x Pepperoni Classic Pizza",
+       "delivery_address": "291 Campus Drive, Stanford, CA 94305, US",
+       "items": "1 Pepperoni Classic Pizza",
        "delivery_type": "Priority Delivery",
        "estimated_delivery": "estimated time",
        "payment_method": "Uber Eats Credits",
@@ -71,10 +71,10 @@ ERROR HANDLING:
 
 IMPORTANT NOTES:
 - You are using an AUTHENTICATED Uber Eats profile - you should already be logged in
-- Address should be available in saved addresses: 560 20th St, San Francisco, CA 94107-4344, US
+- Address should be available in saved addresses: 291 Campus Drive, Stanford, CA 94305, US
 - Payment method is Uber Eats Credits/Cash - do NOT add gift cards
 - MUST select "Priority Delivery" option during checkout
-- Order exactly \${quantity} Pepperoni Classic pizza(s) with no customizations
+- Order exactly 1 Pepperoni Classic pizza(s) with no customizations
 - Always wait for page elements to load before interacting
 - Take screenshots at each major step for verification
 - If not logged in or profile issue, note this in error
