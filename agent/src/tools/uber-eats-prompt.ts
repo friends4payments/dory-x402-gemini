@@ -1,17 +1,17 @@
 export const uberEatsPizza = `
-You are an automation agent tasked with ordering 1 Pepperoni Classic pizza(s) from Tony's Napolitana Pizza on Uber Eats using an authenticated user profile with Uber Eats credits.
+You are an automation agent tasked with ordering 1 Margherita pizza(s) from Pizzeria Delfina on Uber Eats using an authenticated user profile with Uber Eats credits.
 
 MISSION:
-Complete an order for 1 Pepperoni Classic pizza(s) from Tony's Napolitana Pizza on Uber Eats, using the saved delivery address and paying with Uber Eats credits. Select Priority Delivery.
+Complete an order for 1 Margherita pizza(s) from Pizzeria Delfina on Uber Eats, using the saved delivery address and paying with Uber Eats credits. Select Priority Delivery.
 
 IMPORTANT: You are operating with an authenticated Uber Eats account. The delivery address and payment method are already saved in the profile.
 
 STEP-BY-STEP INSTRUCTIONS:
 
 1. NAVIGATE TO STORE:
-   - Go to https://www.ubereats.com/store/tonys-pizza-napoletana/fKviGypwSDaWy6nGC2wQuQ
+   - Go to https://www.ubereats.com/store/pizzeria-delfina-palo-alto/7Szl92FlQvCW6FUH--ENsw
    - Wait for the store page to fully load
-   - Verify you are on Tony's Napolitana Pizza store page
+   - Verify you are on Pizzeria Delfina store page
 
 2. VERIFY/SELECT DELIVERY ADDRESS:
    - Check if delivery address is already set to: 291 Campus Drive, Stanford, CA 94305, US
@@ -20,9 +20,9 @@ STEP-BY-STEP INSTRUCTIONS:
    - Ensure DELIVERY mode is selected (not Pickup)
 
 3. FIND AND SELECT PEPPERONI CLASSIC PIZZA:
-   - Browse the menu to locate "Pepperoni Classic" pizza
-   - This may be under sections like "Pizzas", "Classic Pizzas", or similar
-   - Click on "Pepperoni Classic" to view the item details
+   - Browse the menu to locate "Margherita" pizza
+   - This may be under sections like "Featured Items", "Red Pies", or similar
+   - Click on "Margherita" to view the item details
    - Do NOT make any customizations - keep all default options
    - Set quantity to 1 pizzas
    - Click "Add to Cart" or "Add to Order" button
@@ -30,7 +30,7 @@ STEP-BY-STEP INSTRUCTIONS:
 
 4. VIEW CART AND PROCEED TO CHECKOUT:
    - Click on cart icon or "View Cart" button
-   - Verify the cart shows: 1 Pepperoni Classic pizza
+   - Verify the cart shows: 1 Margherita pizza
    - Click "Checkout" or "Go to Checkout" button
 
 5. SELECT PRIORITY DELIVERY:
@@ -54,7 +54,7 @@ STEP-BY-STEP INSTRUCTIONS:
        "order_number": "order confirmation number",
        "total_amount": "total charged amount",
        "delivery_address": "291 Campus Drive, Stanford, CA 94305, US",
-       "items": "1 Pepperoni Classic Pizza",
+       "items": "1 Margherita Pizza",
        "delivery_type": "Priority Delivery",
        "estimated_delivery": "estimated time",
        "payment_method": "Uber Eats Credits",
@@ -74,7 +74,7 @@ IMPORTANT NOTES:
 - Address should be available in saved addresses: 291 Campus Drive, Stanford, CA 94305, US
 - Payment method is Uber Eats Credits/Cash - do NOT add gift cards
 - MUST select "Priority Delivery" option during checkout
-- Order exactly 1 Pepperoni Classic pizza(s) with no customizations
+- Order exactly 1 Margherita pizza(s) with no customizations
 - Always wait for page elements to load before interacting
 - Take screenshots at each major step for verification
 - If not logged in or profile issue, note this in error

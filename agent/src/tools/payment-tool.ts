@@ -89,7 +89,7 @@ export const uberEatsCreateOrder = createTool({
       price: roundedPrice,
       asset: "USDC",
       payload: {
-        itemType: "Pizza pepperoni",
+        itemType: "Pizza Margherita",
         amount: 1,
       },
     };
