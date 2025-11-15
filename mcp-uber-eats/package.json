@@ -1,0 +1,18 @@
+{
+  "name": "mcp-uber-eats",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "MCP Server for uber-eats",
+  "main": "server.js",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "browser-use-sdk": "latest",
+    "dotenv": "^17.2.3",
+    "fs": "0.0.1-security",
+    "zod": "^4.1.12",
+    "zod-v3": "npm:zod@3.23.8"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

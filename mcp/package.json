@@ -1,0 +1,15 @@
+{
+  "name": "mcp-server",
+  "version": "0.0.1",
+  "description": "MCP server for Dory X402",
+  "main": "src/index.ts",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "dotenv": "^17.2.3",
+    "zod": "^3.23.8"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dory-x402",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-06",
+  "vars": {
+    "FACILITATOR_URL": "https://facilitator.payai.network",
+    "NETWORK": "solana-devnet",
+    "TREASURY_ADDRESS": "<YOUR_TREASURY_ADDRESS>"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+  },
+  "dev": {
+    "port": 8789,
+    "inspector_port": 9231,
+  },
+  "kv_namespaces": [
+    {
+      "binding": "X402_PAYMENTS",
+      "id": "<YOUR_KV_NAMESPACE_ID>"
+    }
+  ],
+}
